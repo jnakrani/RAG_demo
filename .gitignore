@@ -172,3 +172,13 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
+
+# Alembic
+alembic/versions/
+alembic/*.ini
+alembic.ini
+alembic/*
+
+# ChromaDB
+.chroma/*
+chroma_db/*
