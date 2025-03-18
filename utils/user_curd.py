@@ -12,7 +12,7 @@ def create_user(db: Session, user: UserCreate):
     db_user = User(
         email=user.email,
         hashed_password=hash_password(user.password),
-        full_name=user.username,
+        full_name=user.full_name,
     )
     db.add(db_user)
     db.commit()
@@ -28,7 +28,7 @@ def get_users(db: Session):
 def update_user(db: Session, user_name: str, user: UserCreate):
     db_user = db.query(User).filter(User.full_name == user_name).first()
     if db_user:
-        db_user.full_name = user.username
+        db_user.full_name = user.full_name
         db.commit()
         db.refresh(db_user)
     return db_user

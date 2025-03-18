@@ -1,15 +1,28 @@
 from controler.chromadb_controler import ChromaDBController
 from utils.llm_setup import setup_qa_system, process_qa_response
 from utils.logging_utils import setup_logging
+from database import get_db
+from authorization.auth import require_permission, get_current_active_user
+from user_model import User
 
-from fastapi import HTTPException, APIRouter
+from fastapi import HTTPException, APIRouter, Depends
+from sqlalchemy.orm import Session
+from typing import Dict, Any
 
 logger = setup_logging()
 
-router = APIRouter(tags=["QA"])
+router = APIRouter(prefix="/qa", tags=["qa"])
 
-@router.post("/question_answer")
-async def question_answer(query: str):
+def get_document_permission(action: str):
+    return require_permission(action, "Document")
+
+@router.post("/ask")
+@get_document_permission("read")
+async def question_answer(
+    query: str,
+    current_user: User = Depends(get_current_active_user),
+    db: Session = Depends(get_db)
+):
     """
     Process a question and generate an answer based on stored documents.
 
