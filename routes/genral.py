@@ -1,18 +1,23 @@
 from utils.logging_utils import setup_logging
-
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
+from sqlalchemy.orm import Session
+from database import get_db
+from authorization.auth import require_permission
 
 logger = setup_logging()
 
-router = APIRouter(tags=["General"])
+router = APIRouter(tags=["general"])
 
 @router.get("/")
 async def root():
-    """
-    Root endpoint to verify API status.
+    """Root endpoint - no authentication required"""
+    return {
+        "message": "PDF Question Answering API",
+        "status": "running",
+        "version": "1.0.0"
+    }
 
-    Returns:
-        dict: Welcome message
-    """
-    logger.info("Root endpoint accessed")
-    return {"message": "Welcome to QA API"}
+@router.get("/health")
+async def health_check():
+    """Health check endpoint - no authentication required"""
+    return {"status": "healthy"}

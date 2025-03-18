@@ -1,18 +1,33 @@
 import os
 import uuid
+import logging
 
 from utils.utils import split_pdf
 from controler.chromadb_controler import ChromaDBController
 from utils.logging_utils import setup_logging
 
-from fastapi import UploadFile, File, HTTPException, APIRouter
+from fastapi import UploadFile, File, HTTPException, APIRouter, Depends, Request
+from sqlalchemy.orm import Session
+from database import get_db
+from authorization.auth import require_permission
+from user_model import User
+from utils.auth_utils import get_current_active_user
+from fastapi.responses import JSONResponse
+from typing import List, Dict, Any
 
-logger = setup_logging()
+logger = logging.getLogger(__name__)
 
-router = APIRouter(tags=["ChromaDB"])
+router = APIRouter(prefix="/documents", tags=["documents"])
+chroma_controller = ChromaDBController()
 
-@router.get("/list_documents")
-async def list_documents():
+def get_document_permission(action: str):
+    return require_permission(action, "Document")
+
+@router.get("/")
+@get_document_permission("read")
+async def list_documents(
+    current_user: User = Depends(get_current_active_user)
+) -> Dict[str, List[Dict[str, Any]]]:
     """
     Retrieve a list of all documents stored in the database.
 
@@ -35,9 +50,13 @@ async def list_documents():
     except Exception as e:
         logger.error(f"Error listing documents: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error listing documents: {str(e)}")
-    
-@router.post("/upload_pdf")
-async def upload_pdf(file: UploadFile = File(...)):
+
+@router.post("/upload")
+@get_document_permission("write")
+async def upload_pdf(
+    file: UploadFile = File(...),
+    current_user: User = Depends(get_current_active_user)
+) -> Dict[str, str]:
     """
     Upload and process a PDF file into ChromaDB.
 
@@ -100,8 +119,12 @@ async def upload_pdf(file: UploadFile = File(...)):
         logger.error(f"Error processing PDF: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error processing PDF: {str(e)}")
 
-@router.delete("/delete_documents")
-async def delete_documents(file_name: str):
+@router.delete("/{file_name}")
+@get_document_permission("delete")
+async def delete_document(
+    file_name: str,
+    current_user: User = Depends(get_current_active_user)
+) -> Dict[str, str]:
     """
     Delete documents from the database by file name.
 
@@ -123,8 +146,11 @@ async def delete_documents(file_name: str):
         logger.error(f"Error deleting documents: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error deleting documents: {str(e)}")
 
-@router.delete("/clear_collection")
-async def clear_collection():
+@router.delete("/clear")
+@get_document_permission("delete")
+async def clear_collection(
+    current_user: User = Depends(get_current_active_user)
+) -> Dict[str, str]:
     """
     Clear all documents from the collection.
 
