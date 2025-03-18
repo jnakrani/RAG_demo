@@ -1,5 +1,5 @@
-from fastapi import Request, HTTPException, Depends
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from fastapi import HTTPException, Depends
+from fastapi.security import HTTPBearer
 from oso import Oso
 from pathlib import Path
 from functools import wraps

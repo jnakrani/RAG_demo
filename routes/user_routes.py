@@ -104,6 +104,7 @@ async def list_users(
 ):
     """List all users (Admin only)"""
     users = db.query(User).offset(skip).limit(limit).all()
+    print("users", users)
     return users
 
 @router.get("/{user_id}", response_model=UserResponse)

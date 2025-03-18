@@ -17,7 +17,7 @@ def get_role_permission(action: str):
 async def list_roles(
     current_user: User = Depends(get_current_active_user),
     db: Session = Depends(get_db)
-) -> Dict[str, List[Dict[str, Any]]]:
+):
     """List all roles"""
     try:
         roles = db.query(Role).all()
@@ -32,7 +32,7 @@ async def create_role(
     name: str,
     current_user: User = Depends(get_current_active_user),
     db: Session = Depends(get_db)
-) -> Dict[str, Any]:
+):
     """Create a new role"""
     try:
         # Check if role already exists
@@ -58,7 +58,7 @@ async def delete_role(
     role_id: int,
     current_user: User = Depends(get_current_active_user),
     db: Session = Depends(get_db)
-) -> Dict[str, str]:
+):
     """Delete a role"""
     try:
         role = db.query(Role).filter(Role.id == role_id).first()
@@ -85,7 +85,7 @@ async def assign_role(
     role_id: int,
     current_user: User = Depends(get_current_active_user),
     db: Session = Depends(get_db)
-) -> Dict[str, str]:
+):
     """Assign a role to a user"""
     try:
         user = db.query(User).filter(User.id == user_id).first()
@@ -114,7 +114,7 @@ async def remove_role(
     role_id: int,
     current_user: User = Depends(get_current_active_user),
     db: Session = Depends(get_db)
-) -> Dict[str, str]:
+):
     """Remove a role from a user"""
     try:
         user = db.query(User).filter(User.id == user_id).first()

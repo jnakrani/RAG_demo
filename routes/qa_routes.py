@@ -22,7 +22,7 @@ async def question_answer(
     query: str,
     current_user: User = Depends(get_current_active_user),
     db: Session = Depends(get_db)
-) -> Dict[str, Any]:
+):
     """
     Process a question and generate an answer based on stored documents.
 

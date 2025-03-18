@@ -1,8 +1,5 @@
 from utils.logging_utils import setup_logging
-from fastapi import APIRouter, Depends
-from sqlalchemy.orm import Session
-from database import get_db
-from authorization.auth import require_permission
+from fastapi import APIRouter
 
 logger = setup_logging()
 

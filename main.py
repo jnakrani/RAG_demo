@@ -93,6 +93,6 @@ if __name__ == "__main__":
         "main:app",
         host="0.0.0.0",
         port=8000,
-        reload=True,  # Enable auto-reload
-        log_level="debug"  # Set log level to debug
+        reload=True,
+        log_level="debug"
     )

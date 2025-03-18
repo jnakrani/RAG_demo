@@ -4,16 +4,12 @@ import logging
 
 from utils.utils import split_pdf
 from controler.chromadb_controler import ChromaDBController
-from utils.logging_utils import setup_logging
 
-from fastapi import UploadFile, File, HTTPException, APIRouter, Depends, Request
-from sqlalchemy.orm import Session
-from database import get_db
+from fastapi import UploadFile, File, HTTPException, APIRouter, Depends
 from authorization.auth import require_permission
 from user_model import User
 from utils.auth_utils import get_current_active_user
-from fastapi.responses import JSONResponse
-from typing import List, Dict, Any
+
 
 logger = logging.getLogger(__name__)
 
@@ -27,7 +23,7 @@ def get_document_permission(action: str):
 @get_document_permission("read")
 async def list_documents(
     current_user: User = Depends(get_current_active_user)
-) -> Dict[str, List[Dict[str, Any]]]:
+):
     """
     Retrieve a list of all documents stored in the database.
 
@@ -56,7 +52,7 @@ async def list_documents(
 async def upload_pdf(
     file: UploadFile = File(...),
     current_user: User = Depends(get_current_active_user)
-) -> Dict[str, str]:
+):
     """
     Upload and process a PDF file into ChromaDB.
 
@@ -124,7 +120,7 @@ async def upload_pdf(
 async def delete_document(
     file_name: str,
     current_user: User = Depends(get_current_active_user)
-) -> Dict[str, str]:
+):
     """
     Delete documents from the database by file name.
 
@@ -150,7 +146,7 @@ async def delete_document(
 @get_document_permission("delete")
 async def clear_collection(
     current_user: User = Depends(get_current_active_user)
-) -> Dict[str, str]:
+):
     """
     Clear all documents from the collection.
 
